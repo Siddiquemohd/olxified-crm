@@ -26,8 +26,10 @@
     "next-env.d.ts",
     ".next/types/**/*.ts",
     "**/*.ts",
-    "**/*.tsx"
-, "app/customer/page.tsx", "app/firebase-config.js"  ],
+    "**/*.tsx",
+    "app/categeory/page.tsx",
+    "app/firebase-config.js"
+  ],
   "exclude": [
     "node_modules"
   ]

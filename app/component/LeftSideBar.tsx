@@ -111,56 +111,52 @@ const LeftSideBar: React.FC = () => {
         {/* MENU WITH ICONS */}
         <Link href="/dashboard">
           <div
-            className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${
-              pathname === "/dashboard"
-                ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
-                : ""
-            }`}
+            className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/dashboard"
+              ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
+              : ""
+              }`}
           >
             <MdOutlineDashboard className=" w-6 h-6   " />
             <p className="">Dashboard</p>
           </div>
         </Link>
         {hasCustomerView && (
-          <Link href="/customer">
+          <Link href="/categeory">
             <div
-              className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${
-                pathname === "/customer" || pathname === "/customerdetails"
-                  ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
-                  : ""
-              }`}
+              className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/customer" || pathname === "/customerdetails"
+                ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
+                : ""
+                }`}
             >
               <MdOutlinePeopleOutline className=" w-6 h-6   " />
-              <p className="">Customers</p>
+              <p className="">Add Categeory</p>
             </div>
           </Link>
         )}
 
-        {hasCustomerView && (
+        {/* {hasCustomerView && (
           <div>
             <>
               <div
                 onClick={toggleSubmenu}
-                className={`mb-4 flex gap-4 items-center group hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed  px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack hover:text-primary-600 ${
-                  isActive
-                    ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
-                    : ""
-                }`}
+                className={`mb-4 flex gap-4 items-center group hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed  px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack hover:text-primary-600 ${isActive
+                  ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
+                  : ""
+                  }`}
               >
                 <AiOutlineDashboard className=" w-6 h-6   " />
                 <p className="">CRM</p>
                 <FaChevronDown className="absolute right-3 top-1/2  -translate-y-1/2" />
               </div>
-              {/* Submenu */}
+           
               {isSubmenuOpen && (
                 <div className="bg-sideBarHoverbg pt-2 -mt-4">
                   <Link href="/crm/total-accounts">
                     <div
-                      className={`mb-2 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${
-                        pathname === "/crm/total-accounts"
-                          ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
-                          : ""
-                      }`}
+                      className={`mb-2 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/crm/total-accounts"
+                        ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
+                        : ""
+                        }`}
                     >
                       <MdOutlineSwitchAccount className=" w-6 h-6   " />
                       <p className="">Accounts</p>
@@ -168,11 +164,10 @@ const LeftSideBar: React.FC = () => {
                   </Link>
                   <Link href="/crm/total-contacts">
                     <div
-                      className={`mb-2 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${
-                        pathname === "/crm/total-contacts"
-                          ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
-                          : ""
-                      }`}
+                      className={`mb-2 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/crm/total-contacts"
+                        ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
+                        : ""
+                        }`}
                     >
                       <RiContactsBook3Fill className=" w-6 h-6   " />
                       <p className="">Contacts</p>
@@ -180,11 +175,10 @@ const LeftSideBar: React.FC = () => {
                   </Link>
                   <Link href="/crm/total-leads">
                     <div
-                      className={`mb-2 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${
-                        pathname === "/crm/total-leads"
-                          ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
-                          : ""
-                      }`}
+                      className={`mb-2 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/crm/total-leads"
+                        ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
+                        : ""
+                        }`}
                     >
                       <SiGoogleadsense className=" w-6 h-6   " />
                       <p className="">Leads</p>
@@ -192,11 +186,10 @@ const LeftSideBar: React.FC = () => {
                   </Link>
                   <Link href="/crm/total-quotes">
                     <div
-                      className={`mb-2 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${
-                        pathname === "/crm/total-quotes"
-                          ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
-                          : ""
-                      }`}
+                      className={`mb-2 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/crm/total-quotes"
+                        ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
+                        : ""
+                        }`}
                     >
                       <ImQuotesLeft className=" w-6 h-6   " />
                       <p className="">Quotes</p>
@@ -204,11 +197,10 @@ const LeftSideBar: React.FC = () => {
                   </Link>
                   <Link href="/crm/get-product">
                     <div
-                      className={`mb-2 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${
-                        pathname === "/crm/get-product"
-                          ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
-                          : ""
-                      }`}
+                      className={`mb-2 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/crm/get-product"
+                        ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
+                        : ""
+                        }`}
                     >
                       <AiFillProduct className=" w-6 h-6   " />
                       <p className="">Products</p>
@@ -216,11 +208,10 @@ const LeftSideBar: React.FC = () => {
                   </Link>
                   <Link href="/crm/get-category">
                     <div
-                      className={`mb-2 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${
-                        pathname === "/crm/get-category"
-                          ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
-                          : ""
-                      }`}
+                      className={`mb-2 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/crm/get-category"
+                        ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
+                        : ""
+                        }`}
                     >
                       <MdCategory className=" w-6 h-6   " />
                       <p className="">Product Category</p>
@@ -230,26 +221,24 @@ const LeftSideBar: React.FC = () => {
               )}
             </>
           </div>
-        )}
-        <Link href="/transaction">
+        )} */}
+        <Link href="/sub-categeory">
           <div
-            className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${
-              pathname === "/transaction"
-                ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
-                : ""
-            }`}
+            className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/transaction"
+              ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
+              : ""
+              }`}
           >
             <TbDeviceMobileDollar className=" w-6 h-6   " />
-            <p className="">Transaction</p>
+            <p className="">Sub Categeory</p>
           </div>
         </Link>
         <Link href="/point-of-services">
           <div
-            className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${
-              pathname === "/point-of-services"
-                ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
-                : ""
-            }`}
+            className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/point-of-services"
+              ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
+              : ""
+              }`}
           >
             <HiWrenchScrewdriver className=" w-6 h-6   " />
             <p className=""> Point of Services</p>
@@ -257,11 +246,10 @@ const LeftSideBar: React.FC = () => {
         </Link>
         <Link href="/payment-terminal">
           <div
-            className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${
-              pathname === "/payment-terminal"
-                ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
-                : ""
-            }`}
+            className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/payment-terminal"
+              ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
+              : ""
+              }`}
           >
             <FaMoneyCheckDollar className=" w-6 h-6   " />
             <p className=""> Payment Terminal</p>
@@ -269,11 +257,10 @@ const LeftSideBar: React.FC = () => {
         </Link>
         <Link href="/cards">
           <div
-            className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${
-              pathname === "/cards"
-                ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
-                : ""
-            }`}
+            className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/cards"
+              ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
+              : ""
+              }`}
           >
             <BsCreditCard2Back className=" w-6 h-6   " />
             <p className=""> Credit Cards</p>
@@ -282,11 +269,10 @@ const LeftSideBar: React.FC = () => {
         {hasSystemUserView && (
           <Link href="/usermanagement">
             <div
-              className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${
-                pathname === "/usermanagement" || pathname === "/useradd"
-                  ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
-                  : ""
-              }`}
+              className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/usermanagement" || pathname === "/useradd"
+                ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
+                : ""
+                }`}
             >
               <FaUserEdit className=" w-6 h-6   " />
               <p className=""> User Management</p>
@@ -296,11 +282,10 @@ const LeftSideBar: React.FC = () => {
         {hasUserActivityView && (
           <Link href="/user-activity">
             <div
-              className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${
-                pathname === "/user-activity"
-                  ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
-                  : ""
-              }`}
+              className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/user-activity"
+                ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
+                : ""
+                }`}
             >
               <RiHistoryLine className=" w-6 h-6   " />
               <p className=""> User Activity</p>
@@ -309,11 +294,10 @@ const LeftSideBar: React.FC = () => {
         )}
         <Link href="/setting">
           <div
-            className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${
-              pathname === "/setting"
-                ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
-                : ""
-            }`}
+            className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/setting"
+              ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
+              : ""
+              }`}
           >
             <IoMdSettings className=" w-6 h-6   " />
             <p className="">Setting</p>
