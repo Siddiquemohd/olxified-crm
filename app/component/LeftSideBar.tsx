@@ -94,7 +94,7 @@ const LeftSideBar: React.FC = () => {
     <div className="w-full hidden md:w-[17%]  md:flex flex-col justify-between py-4 px-1 border-r-2 border-customBorder shadow-borderShadow mt-0  h-screen fixed top-0 left-0">
       {/* SIDE LEFT BAR TOP SECTION */}
       <div className="z-10 overflow-y-auto custom-scrollbar">
-        <Link href="/customer">
+        {/* <Link href="/customer">
           <div className=" flex gap-2 mb-12 px-3 py-2">
             <Image
               src="/images/orizonIcon.svg"
@@ -107,7 +107,7 @@ const LeftSideBar: React.FC = () => {
               Orizon
             </p>
           </div>
-        </Link>
+        </Link> */}
         {/* MENU WITH ICONS */}
         <Link href="/dashboard">
           <div
@@ -120,19 +120,19 @@ const LeftSideBar: React.FC = () => {
             <p className="">Dashboard</p>
           </div>
         </Link>
-        {hasCustomerView && (
-          <Link href="/categeory">
-            <div
-              className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/customer" || pathname === "/customerdetails"
-                ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
-                : ""
-                }`}
-            >
-              <MdOutlinePeopleOutline className=" w-6 h-6   " />
-              <p className="">Add Categeory</p>
-            </div>
-          </Link>
-        )}
+
+        <Link href="/categeory">
+          <div
+            className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/customer" || pathname === "/customerdetails"
+              ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
+              : ""
+              }`}
+          >
+            <MdOutlinePeopleOutline className=" w-6 h-6   " />
+            <p className="">Add Categeory</p>
+          </div>
+        </Link>
+
 
         {/* {hasCustomerView && (
           <div>
@@ -233,7 +233,7 @@ const LeftSideBar: React.FC = () => {
             <p className="">Sub Categeory</p>
           </div>
         </Link>
-        <Link href="/point-of-services">
+        <Link href="/varification">
           <div
             className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/point-of-services"
               ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
@@ -241,57 +241,36 @@ const LeftSideBar: React.FC = () => {
               }`}
           >
             <HiWrenchScrewdriver className=" w-6 h-6   " />
-            <p className=""> Point of Services</p>
+            <p className="">Varification</p>
           </div>
         </Link>
-        <Link href="/payment-terminal">
+
+        {/* {hasSystemUserView && ( */}
+        <Link href="/usermanagement">
           <div
-            className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/payment-terminal"
+            className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/usermanagement" || pathname === "/useradd"
               ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
               : ""
               }`}
           >
-            <FaMoneyCheckDollar className=" w-6 h-6   " />
-            <p className=""> Payment Terminal</p>
+            <FaUserEdit className=" w-6 h-6   " />
+            <p className=""> User Management</p>
           </div>
         </Link>
-        <Link href="/cards">
+        {/* )} */}
+        {/* {hasUserActivityView && ( */}
+        <Link href="/user-activity">
           <div
-            className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/cards"
+            className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/user-activity"
               ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
               : ""
               }`}
           >
-            <BsCreditCard2Back className=" w-6 h-6   " />
-            <p className=""> Credit Cards</p>
+            <RiHistoryLine className=" w-6 h-6   " />
+            <p className=""> User Activity</p>
           </div>
         </Link>
-        {hasSystemUserView && (
-          <Link href="/usermanagement">
-            <div
-              className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/usermanagement" || pathname === "/useradd"
-                ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
-                : ""
-                }`}
-            >
-              <FaUserEdit className=" w-6 h-6   " />
-              <p className=""> User Management</p>
-            </div>
-          </Link>
-        )}
-        {hasUserActivityView && (
-          <Link href="/user-activity">
-            <div
-              className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/user-activity"
-                ? "bg-primary-600 text-white hover:!bg-primary-600 hover:!text-white"
-                : ""
-                }`}
-            >
-              <RiHistoryLine className=" w-6 h-6   " />
-              <p className=""> User Activity</p>
-            </div>
-          </Link>
-        )}
+        {/* )} */}
         <Link href="/setting">
           <div
             className={`mb-4 flex gap-4 items-center group px-3 py-2 rounded-[4px] relative cursor-pointer text-base leading-normal font-medium text-firstBlack  hover:bg-sideBarHoverbg active:bg-sideBarHoverbgPressed hover:text-primary-600 ${pathname === "/setting"

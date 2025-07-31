@@ -26,7 +26,7 @@ const DynamicBreadCrum = () => {
           </p>
         </div>
       )}
-      {(pathname === "/customer" || pathname === "/customerdetails") && (
+      {/* {(pathname === "/customer" || pathname === "/customerdetails") && (
         <div className="flex  md:flex gap-2 w-auto items-center">
           <p className="text-[#4B5675] text-sm font-medium leading-5">
             Customers
@@ -46,7 +46,7 @@ const DynamicBreadCrum = () => {
             )}
           </p>
         </div>
-      )}
+      )} */}
       {pathname === "/crm/total-accounts" && (
         <div className="flex  md:flex gap-2 w-auto items-center">
           <p className="text-[#4B5675] text-sm font-medium leading-5">

@@ -5,7 +5,6 @@ import { IoIosNotificationsOutline } from "react-icons/io";
 import { PiArrowCircleUp } from "react-icons/pi";
 import LeftSideBar from "../component/LeftSideBar";
 import AxiosProvider from "../../provider/AxiosProvider";
-import { AxiosHeaders } from "axios";
 import { useEffect, useState } from "react";
 import { HiChevronDoubleLeft } from "react-icons/hi";
 import { HiChevronDoubleRight } from "react-icons/hi";
@@ -28,18 +27,21 @@ import { useAuthRedirect } from "../component/hooks/useAuthRedirect";
 const axiosProvider = new AxiosProvider();
 const activityLogger = new UserActivityLogger();
 
-interface TotalSubCategory {
+interface TotalAccounts {
     id: string;
-    category_id: string;         // ✅ Add this
     category: string;
     sub_category: string;
+    // phone_office: string;
+    // phone_alternate: string | null;
+    // website: string;
+    // industry: string | null;
     created_by: string;
     created_at: string;
     updated_at: string;
 }
 interface FormValues {
     user_id: string;
-    category_id: string;
+    category: string;
     sub_category: string;
     // phone_office: string;
     // phone_alternate: string;
@@ -48,7 +50,7 @@ interface FormValues {
 interface EditFormValues {
     user_id: string;
     id: string;
-    category_id: string;
+    category: string;
     sub_category: string;
     // phone_office: string;
     // phone_alternate: string;
@@ -57,7 +59,7 @@ interface EditFormValues {
 
 export default function Home() {
     const isChecking = useAuthRedirect();
-    const [data, setData] = useState<TotalSubCategory[]>([]);
+    const [data, setData] = useState<TotalAccounts[]>([]);
     //console.log("total accounts data", data);
     const [page, setPage] = useState<number>(1);
     const [limit] = useState<number>(10);
@@ -68,37 +70,18 @@ export default function Home() {
     const [openForAdd, setOpenForAdd] = useState<boolean>(false);
     const [openForEdit, setOpenForEdit] = useState<boolean>(false);
     const [editAccount, setEditAccount] = useState<any | null>(null);
-    const [categoryOptions, setCategoryOptions] = useState<{ label: string; value: string }[]>([]);
 
     const toggleFilterFlyout = () => {
         setFlyoutOpen(!isFlyoutOpen);
         setOpenForAdd(true);
         setOpenForEdit(false);
     };
-
-    // const [initialEditValues, setInitialEditValues] = useState<EditFormValues>({
-    //     user_id: "",
-    //     id: "",
-    //     category_id: "",
-    //     sub_category: "",
-    // });
-
-    const openEditFlyout = (item: TotalSubCategory) => {
-        setEditAccount(item);
-
-        setInitialEditValues({
-            user_id: user_id,
-            id: item.id,
-            category_id: item.category_id,      // ✅ Now this will be defined
-            sub_category: item.sub_category,
-        });
-
-        setFlyoutOpen(true);
-        setOpenForEdit(true);
+    const openEditFlyout = (item: any) => {
+        setFlyoutOpen(!isFlyoutOpen);
         setOpenForAdd(false);
+        setOpenForEdit(true);
+        setEditAccount(item);
     };
-
-
 
     const storage = new StorageManager();
     const user_id = storage.getUserId();
@@ -107,60 +90,69 @@ export default function Home() {
     const fetchData = async () => {
         setIsLoading(true);
         try {
-            const response = await axiosProvider.get('/getallsubcategories', {
-                params: {
-                    page,
-                    limit,
+            // Simulate API delay
+            await new Promise((res) => setTimeout(res, 500));
+
+            // Static mock data
+            const mockAccounts: TotalAccounts[] = [
+                {
+                    id: "1",
+                    category: "Alpha Corp",
+                    sub_category: "Beta Crop",
+                    // phone_office: "1234567890",
+                    // phone_alternate: "9876543210",
+                    // website: "https://alphacorp.com",
+                    // industry: "Finance",
+                    created_by: "admin",
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
                 },
-                headers: new AxiosHeaders(),
-            });
+                {
+                    id: "2",
+                    category: "Beta Solutions",
+                    sub_category: "Gama Solutions",
+                    // phone_office: "1122334455",
+                    // phone_alternate: "9988776655",
+                    // website: "https://betasolutions.com",
+                    // industry: "IT",
+                    created_by: "admin",
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                },
+            ];
 
-            const apiData = response.data?.data || [];
-
-            const formattedData: TotalSubCategory[] = apiData.map((item: any) => ({
-                id: item.id,
-                category_id: item.category_id,
-                category: item.category_name,
-                sub_category: item.name,
-                created_by: "admin",
-                created_at: item.created_at || new Date().toISOString(),
-                updated_at: item.updated_at || new Date().toISOString(),
-            }));
-
-            setData(formattedData);
-            setTotalPages(response.data.totalPages || 1); // <- ensure API sends total pages
+            setData(mockAccounts);
+            setTotalPages(1);
         } catch (error: any) {
-            console.error('Error fetching subcategories:', error);
             setIsError(true);
         } finally {
             setIsLoading(false);
         }
     };
 
+    const categoryOptions = [
+        { label: "Technology", value: "technology" },
+        { label: "Healthcare", value: "healthcare" },
+        { label: "Finance", value: "finance" },
+    ];
 
-    const fetchCategories = async () => {
-        try {
-            const response = await axiosProvider.get("/getallcategories");
-            const categories = response.data?.data || [];
-
-            const formatted = categories.map((item: any) => ({
-                label: item.name,
-                value: item.id,
-            }));
-
-            console.log("Formatted categories:", formatted); // ✅ Check what you get here
-            setCategoryOptions(formatted);
-        } catch (error) {
-            console.error("Error fetching categories:", error);
-        }
+    const subCategoryOptionsMap: Record<string, { label: string; value: string }[]> = {
+        technology: [
+            { label: "Software", value: "software" },
+            { label: "Hardware", value: "hardware" },
+        ],
+        healthcare: [
+            { label: "Pharma", value: "pharma" },
+            { label: "Wellness", value: "wellness" },
+        ],
+        finance: [
+            { label: "Banking", value: "banking" },
+            { label: "Insurance", value: "insurance" },
+        ],
     };
 
-
-
     useEffect(() => {
-
         fetchData();
-        fetchCategories();
     }, [page]);
     const handlePageChange = (newPage: number) => {
         if (newPage > 0 && newPage <= totalPages) {
@@ -168,74 +160,81 @@ export default function Home() {
         }
     };
     // ADD FORM DATA
-    const initialValues = {
+    const initialValues: FormValues = {
+        user_id,
+        category: "",
         sub_category: "",
-        category_id: "", // <- make sure this is not `category`
-        user_id: user_id, // Pass this from localStorage or context
+        // phone_office: "",
+        // phone_alternate: "",
+        // industry: "",
+    };
+    // EDIT FORM DATA
+    const initialEditValues: EditFormValues = {
+        user_id,
+        id: editAccount?.id || "",
+        category: editAccount?.category || "",
+        sub_category: editAccount?.sub_categeory
+        // phone_office: editAccount?.phone_office || "",
+        // phone_alternate: editAccount?.phone_alternate || "",
+        // industry: editAccount?.industry || "",
     };
 
-    const [initialEditValues, setInitialEditValues] = useState<EditFormValues>({
-        user_id: "",
-        id: "",
-        category_id: "",
-        sub_category: "",
-    });
-
-
-
     const validationSchema = Yup.object().shape({
-        category_id: Yup.string().required("Category is required"),
+        category: Yup.string().required("Category is required"),
         sub_category: Yup.string().required("Subcategory is required"),
         // phone_office: Yup.string().required("Office phone is required"),
         // phone_alternate: Yup.string(),
         // industry: Yup.string().required("Industry is required"),
     });
 
-    const handleSubmit = async (values: any) => {
+    const handleSubmit = async (values: FormValues) => {
+        console.log("category", values)
+        // try {
+        //   const response = await axiosProvider.post("/createaccount", values);
+        //   //console.log("Product created:", response.data);
+        //   toast.success("Accounts added");
+        //   setFlyoutOpen(false);
+        //   fetchData();
+        //   // console.log("YYYYYYYYYYYYY", response.data.data.data);
+        //   const activity = "Created CRM Account";
+        //   const moduleName = "Account";
+        //   const type = "Create";
+        //   await activityLogger.crmAdd(
+        //     response.data.data.data.id,
+        //     activity,
+        //     moduleName,
+        //     type
+        //   );
+        // } catch (error: any) {
+        //   console.error("Failed to create product:", error);
+        // }
+    };
+    const handleEditSubmit = async (values: FormValues) => {
         try {
-            const payload = {
-                name: values.sub_category,       // ✅ backend expects `name`
-                category_id: values.category_id, // ✅ correct key
-                user_id: values.user_id          // ✅ assuming this is needed
-            };
-
-            const response = await axiosProvider.post("/createSubCategory", payload);
-            toast.success("SubCategory Created");
+            const response = await axiosProvider.post("/updateaccount", values);
+            const activity = "Updated CRM Account";
+            const moduleName = "Account";
+            const type = "Update";
+            await activityLogger.crmUpdate(
+                response.data.data.id,
+                activity,
+                moduleName,
+                type
+            );
+            toast.success("Accounts Updated");
             setFlyoutOpen(false);
-            fetchData(); // Refresh table
+            fetchData();
         } catch (error: any) {
             console.error("Failed to create product:", error);
-            toast.error(error?.response?.data?.msg || "Failed to create");
         }
     };
 
-
-    const handleEditSubmit = async (values: EditFormValues) => {
-        try {
-            const response = await axiosProvider.post("/updateSubCategory", {
-                id: values.id,
-                sub_category: values.sub_category,     // ✅ match backend
-                category_id: values.category_id,
-            });
-
-            toast.success("SubCategory updated successfully");
-            setFlyoutOpen(false);
-            fetchData(); // Refresh list
-        } catch (error: any) {
-            console.error("Update failed:", error);
-            toast.error(error?.response?.data?.msg || "Failed to update subcategory");
-        }
-    };
-
-
-
-    const deleteUserData = async (item: TotalSubCategory) => {
+    const deleteUserData = async (item: TotalAccounts) => {
         const userID = item.id;
-        console.log("Deleting SubCategory ID:", userID); // ✅ Debug
 
         Swal.fire({
             title: "Are you sure?",
-            text: "Do you really want to delete this subcategory?",
+            text: "Do you really want to delete this user?",
             icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Yes",
@@ -245,24 +244,20 @@ export default function Home() {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const response = await axiosProvider.post("/deleteSubCategory", { id: userID });
-                    console.log("Delete Response:", response.data); // ✅ Debug
-
-                    const activity = "Deleted Sub Category";
-                    const moduleName = "Sub Category";
+                    await axiosProvider.post("/deleteaccount", { id: userID });
+                    const activity = "Deleted CRM Account";
+                    const moduleName = "Account";
                     const type = "Delete";
-
                     await activityLogger.crmDelete(userID, activity, moduleName, type);
                     toast.success("Successfully Deleted");
                     fetchData();
-                } catch (error: any) {
-                    console.error("Error deleting subcategory:", error?.response || error);
-                    toast.error("Failed to delete subcategory");
+                } catch (error) {
+                    console.error("Error deleting user:", error);
+                    toast.error("Failed to delete user");
                 }
             }
         });
     };
-
     if (isChecking) {
         return (
             <div className="h-screen flex flex-col gap-5 justify-center items-center bg-white">
@@ -322,7 +317,7 @@ export default function Home() {
                                     >
                                         <MdOutlineSwitchAccount className=" w-4 h-4 text-white group-hover:text-white" />
                                         <p className=" text-white  text-base font-medium group-hover:text-white">
-                                            Add Sub Category
+                                            Add Accounts
                                         </p>
                                     </div>
                                 </div>
@@ -339,7 +334,7 @@ export default function Home() {
                                         >
                                             <div className="flex items-center gap-2 p-3">
                                                 <div className="font-medium text-firstBlack text-base leading-normal">
-                                                    Category
+                                                    Title
                                                 </div>
                                             </div>
 
@@ -353,7 +348,7 @@ export default function Home() {
 
                                             <div className="flex items-center gap-2 p-3">
                                                 <div className="font-medium text-firstBlack text-base leading-normal">
-                                                    Sub Category
+                                                    Discription
                                                 </div>
                                             </div>
                                         </th>
@@ -509,7 +504,7 @@ export default function Home() {
                                     {/* Header */}
                                     <div className="flex justify-between mb-4 sm:mb-6 md:mb-8">
                                         <p className="text-primary-600 text-[22px] sm:text-[24px] md:text-[26px] font-bold leading-8 sm:leading-9">
-                                            Add Sub Category
+                                            Add Accounts
                                         </p>
                                         <IoCloseOutline
                                             onClick={toggleFilterFlyout}
@@ -533,7 +528,7 @@ export default function Home() {
                                                         <p className="text-[#232323] text-base leading-normal mb-2">Category</p>
                                                         <Field
                                                             as="select"
-                                                            name="category_id"
+                                                            name="category"
                                                             className="hover:shadow-hoverInputShadow focus-border-primary w-full h-[50px] border border-[#DFEAF2] rounded-[4px] text-[15px] pl-4 mb-2 text-firstBlack"
                                                         >
                                                             <option value="">Select Category</option>
@@ -544,7 +539,7 @@ export default function Home() {
                                                             ))}
                                                         </Field>
                                                         <ErrorMessage
-                                                            name="category_id"
+                                                            name="category"
                                                             component="div"
                                                             className="text-red-500 text-xs absolute top-[100%]"
                                                         />
@@ -656,7 +651,6 @@ export default function Home() {
                                         <Formik
                                             initialValues={initialEditValues}
                                             validationSchema={validationSchema}
-                                            enableReinitialize={true}
                                             onSubmit={handleEditSubmit}
                                         >
                                             <Form>
@@ -669,7 +663,7 @@ export default function Home() {
                                                         <p className="text-[#232323] text-base leading-normal mb-2">Category</p>
                                                         <Field
                                                             as="select"
-                                                            name="category_id"
+                                                            name="category"
                                                             className="hover:shadow-hoverInputShadow focus-border-primary w-full h-[50px] border border-[#DFEAF2] rounded-[4px] text-[15px] pl-4 mb-2 text-firstBlack"
                                                         >
                                                             <option value="">Select Category</option>
@@ -680,7 +674,7 @@ export default function Home() {
                                                             ))}
                                                         </Field>
                                                         <ErrorMessage
-                                                            name="category_id"
+                                                            name="category"
                                                             component="div"
                                                             className="text-red-500 text-xs absolute top-[100%]"
                                                         />

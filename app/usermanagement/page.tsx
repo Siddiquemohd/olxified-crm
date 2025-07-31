@@ -74,9 +74,9 @@ export default function Home() {
     const hasSystemUserView = permissions?.some(
       (perm) => perm.name === "systemuser.view"
     );
-    if (!hasSystemUserView) {
-      router.push("/customer");
-    }
+    // if (!hasSystemUserView) {
+    //   router.push("/customer");
+    // }
   }, []);
 
   const toggleEditFlyout = () => {

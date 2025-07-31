@@ -27,7 +27,7 @@ import { useAuthRedirect } from "../component/hooks/useAuthRedirect";
 const axiosProvider = new AxiosProvider();
 const activityLogger = new UserActivityLogger();
 
-interface TotalAccounts {
+interface TotalCategory {
   id: string;
   name: string;
   // phone_office: string;
@@ -56,7 +56,7 @@ interface EditFormValues {
 
 export default function Home() {
   const isChecking = useAuthRedirect();
-  const [data, setData] = useState<TotalAccounts[]>([]);
+  const [data, setData] = useState<TotalCategory[]>([]);
   //console.log("total accounts data", data);
   const [page, setPage] = useState<number>(1);
   const [limit] = useState<number>(10);
@@ -84,46 +84,27 @@ export default function Home() {
   const user_id = storage.getUserId();
 
   // inside fetchData()
+
+
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      // Simulate API delay
-      await new Promise((res) => setTimeout(res, 500));
+      const response = await axiosProvider.get("/getallcategories");
+      // console.log("API Response:", response.data);
 
-      // Static mock data
-      const mockAccounts: TotalAccounts[] = [
-        {
-          id: "1",
-          name: "Alpha Corp",
-          // phone_office: "1234567890",
-          // phone_alternate: "9876543210",
-          // website: "https://alphacorp.com",
-          // industry: "Finance",
-          created_by: "admin",
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: "2",
-          name: "Beta Solutions",
-          // phone_office: "1122334455",
-          // phone_alternate: "9988776655",
-          // website: "https://betasolutions.com",
-          // industry: "IT",
-          created_by: "admin",
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-      ];
-
-      setData(mockAccounts);
+      const result: TotalCategory[] = response.data.data; // ✅ Corrected line
+      setData(result);
       setTotalPages(1);
     } catch (error: any) {
+      console.error("Error fetching categories:", error);
       setIsError(true);
     } finally {
       setIsLoading(false);
     }
   };
+
+
+
 
   useEffect(() => {
     fetchData();
@@ -159,53 +140,83 @@ export default function Home() {
   });
 
   const handleSubmit = async (values: FormValues) => {
-    console.log("category", values)
-    // try {
-    //   const response = await axiosProvider.post("/createaccount", values);
-    //   //console.log("Product created:", response.data);
-    //   toast.success("Accounts added");
-    //   setFlyoutOpen(false);
-    //   fetchData();
-    //   // console.log("YYYYYYYYYYYYY", response.data.data.data);
-    //   const activity = "Created CRM Account";
-    //   const moduleName = "Account";
-    //   const type = "Create";
-    //   await activityLogger.crmAdd(
-    //     response.data.data.data.id,
-    //     activity,
-    //     moduleName,
-    //     type
-    //   );
-    // } catch (error: any) {
-    //   console.error("Failed to create product:", error);
-    // }
+    console.log("Submitting category:", values);
+    try {
+      const response = await axiosProvider.post("/createcategory", values);
+
+      toast.success("Category added successfully!");
+      setFlyoutOpen(false);
+
+      // Refresh account list
+      await fetchData();
+
+      // Activity logging
+      const activity = "Created Category";
+      const moduleName = "Category";
+      const type = "Create";
+      await activityLogger.crmAdd(
+        response.data?.data?.data?.id,
+        activity,
+        moduleName,
+        type
+      );
+    } catch (error: any) {
+      console.error("Failed to create Category:", error);
+      toast.error("Failed to create Category. Please try again.");
+    }
   };
+
   const handleEditSubmit = async (values: FormValues) => {
     try {
-      const response = await axiosProvider.post("/updateaccount", values);
-      const activity = "Updated CRM Account";
-      const moduleName = "Account";
+      const response = await axiosProvider.post("/updatecategory", values);
+      const activity = "Updated Category";
+      const moduleName = "Category";
       const type = "Update";
+
       await activityLogger.crmUpdate(
         response.data.data.id,
         activity,
         moduleName,
         type
       );
-      toast.success("Accounts Updated");
+
+      toast.success("Category Updated Successfully");
       setFlyoutOpen(false);
       fetchData();
     } catch (error: any) {
-      console.error("Failed to create product:", error);
+      console.error("Failed to update category:", error);
+
+      // 🛑 Check if error is due to duplicate category name
+      if (
+        error?.response?.data?.msg?.toLowerCase().includes("already exists") ||
+        error?.response?.data?.error?.toLowerCase().includes("already exists")
+      ) {
+        Swal.fire({
+          title: "Duplicate Category",
+          text: "This category name already exists. Please use a different name.",
+          icon: "warning",
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "OK",
+        });
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: "Failed to update category. Please try again.",
+          icon: "error",
+          confirmButtonColor: "#d33",
+          confirmButtonText: "Close",
+        });
+      }
     }
   };
 
-  const deleteUserData = async (item: TotalAccounts) => {
+
+  const deleteUserData = async (item: TotalCategory) => {
     const userID = item.id;
 
     Swal.fire({
       title: "Are you sure?",
-      text: "Do you really want to delete this user?",
+      text: "Do you really want to delete this Category?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes",
@@ -215,9 +226,9 @@ export default function Home() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axiosProvider.post("/deleteaccount", { id: userID });
-          const activity = "Deleted CRM Account";
-          const moduleName = "Account";
+          await axiosProvider.post("/deletecategory", { id: userID });
+          const activity = "Deleted Category";
+          const moduleName = "Category";
           const type = "Delete";
           await activityLogger.crmDelete(userID, activity, moduleName, type);
           toast.success("Successfully Deleted");
@@ -288,7 +299,7 @@ export default function Home() {
                   >
                     <MdOutlineSwitchAccount className=" w-4 h-4 text-white group-hover:text-white" />
                     <p className=" text-white  text-base font-medium group-hover:text-white">
-                      Add Accounts
+                      Add Category
                     </p>
                   </div>
                 </div>
@@ -358,7 +369,7 @@ export default function Home() {
                         <div className="mt-5">Data not found</div>
                       </td>
                     </tr>
-                  ) : (
+                  ) : Array.isArray(data) && data.length > 0 ? (
                     data.map((item, index) => (
                       <tr
                         className="border border-tableBorder bg-white hover:bg-primary-100"
@@ -369,9 +380,8 @@ export default function Home() {
                             <FaEllipsisVertical
                               data-tooltip-id="my-tooltip"
                               data-tooltip-html={`<div>
-                                  <strong>Description:</strong> <span style="text-transform: capitalize;">${item.name}</span><br/>
-                                 
-                                </div>`}
+                  <strong>Description:</strong> <span style="text-transform: capitalize;">${item.name}</span><br/>
+                </div>`}
                               className="text-black leading-normal capitalize"
                             />
                             <Tooltip id="my-tooltip" place="right" float />
@@ -382,26 +392,9 @@ export default function Home() {
                             </p>
                           </div>
                         </td>
-                        {/* <td className="px-2 py-0 border border-tableBorder hidden md:table-cell">
-                          <p className="text-[#232323] text-base leading-normal">
-                            {item.phone_office}
-                          </p>
-                        </td> */}
-                        {/* <td className="px-2 py-0 border border-tableBorder hidden md:table-cell">
-                          <p className="text-[#232323] text-base leading-normal">
-                            {item.phone_alternate}
-                          </p>
-                        </td> */}
-                        {/* <td className="px-2 py-0 border border-tableBorder hidden md:table-cell">
-                          <div className="flex gap-1.5">
-                            <p className="text-[#232323] text-base leading-normal">
-                              {item.industry}
-                            </p>
-                          </div>
-                        </td> */}
+
                         <td className="px-2 py-1 border border-tableBorder">
                           <div className="flex gap-1 md:gap-2 justify-center md:justify-start">
-                            {/* View Button */}
                             <button
                               onClick={() => openEditFlyout(item)}
                               className="py-[4px] px-3 bg-primary-600 hover:bg-primary-800 active:bg-primary-900 group flex gap-1 items-center rounded-xl text-xs md:text-sm"
@@ -412,22 +405,27 @@ export default function Home() {
                               </p>
                             </button>
 
-                            {/* Delete Button */}
                             <button
                               onClick={() => deleteUserData(item)}
                               className="py-[4px] px-3 bg-black flex gap-1 items-center rounded-full text-xs md:text-sm group hover:bg-primary-600"
                             >
                               <RiDeleteBin6Line className="text-white w-4 h-4" />
-                              <p className="text-white hidden md:block">
-                                Delete
-                              </p>
+                              <p className="text-white hidden md:block">Delete</p>
                             </button>
                           </div>
                         </td>
                       </tr>
                     ))
+                  ) : (
+                    <tr>
+                      <td colSpan={6} className="text-center text-xl mt-5">
+                        No categories found.
+                      </td>
+                    </tr>
                   )}
                 </tbody>
+
+
               </table>
             </div>
             {/* ----------------End table--------------------------- */}
@@ -472,7 +470,7 @@ export default function Home() {
                   {/* Header */}
                   <div className="flex justify-between mb-4 sm:mb-6 md:mb-8">
                     <p className="text-primary-600 text-[22px] sm:text-[24px] md:text-[26px] font-bold leading-8 sm:leading-9">
-                      Add Accounts
+                      Add Category
                     </p>
                     <IoCloseOutline
                       onClick={toggleFilterFlyout}
@@ -587,7 +585,7 @@ export default function Home() {
                   {/* Header */}
                   <div className="flex justify-between mb-4 sm:mb-6 md:mb-8">
                     <p className="text-primary-600 text-[22px] sm:text-[24px] md:text-[26px] font-bold leading-8 sm:leading-9">
-                      Edit Accounts
+                      Edit Category
                     </p>
                     <IoCloseOutline
                       onClick={toggleFilterFlyout}
@@ -699,6 +697,6 @@ export default function Home() {
           </>
         )}
       </div>
-    </div>
+    </div >
   );
 }
