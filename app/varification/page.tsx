@@ -27,39 +27,30 @@ import { useAuthRedirect } from "../component/hooks/useAuthRedirect";
 const axiosProvider = new AxiosProvider();
 const activityLogger = new UserActivityLogger();
 
-interface TotalAccounts {
+interface Totalvarification {
     id: string;
-    category: string;
-    sub_category: string;
-    // phone_office: string;
-    // phone_alternate: string | null;
-    // website: string;
-    // industry: string | null;
-    created_by: string;
-    created_at: string;
-    updated_at: string;
+    title: string;
+    description: string;
+    image: string | null;
+    video: string | null;
 }
+
 interface FormValues {
-    user_id: string;
-    category: string;
-    sub_category: string;
-    // phone_office: string;
-    // phone_alternate: string;
-    // industry: string;
+    id: string;
+    title: string;
+    description: string;
+    file: string;
 }
 interface EditFormValues {
-    user_id: string;
     id: string;
-    category: string;
-    sub_category: string;
-    // phone_office: string;
-    // phone_alternate: string;
-    // industry: string;
+    title: string;
+    description: string;
+    file: string;
 }
 
 export default function Home() {
     const isChecking = useAuthRedirect();
-    const [data, setData] = useState<TotalAccounts[]>([]);
+    const [data, setData] = useState<Totalvarification[]>([]);
     //console.log("total accounts data", data);
     const [page, setPage] = useState<number>(1);
     const [limit] = useState<number>(10);
@@ -69,7 +60,7 @@ export default function Home() {
     const [isFlyoutOpen, setFlyoutOpen] = useState<boolean>(false);
     const [openForAdd, setOpenForAdd] = useState<boolean>(false);
     const [openForEdit, setOpenForEdit] = useState<boolean>(false);
-    const [editAccount, setEditAccount] = useState<any | null>(null);
+    const [editVarification, setEditVarification] = useState<any | null>(null);
 
     const toggleFilterFlyout = () => {
         setFlyoutOpen(!isFlyoutOpen);
@@ -80,7 +71,7 @@ export default function Home() {
         setFlyoutOpen(!isFlyoutOpen);
         setOpenForAdd(false);
         setOpenForEdit(true);
-        setEditAccount(item);
+        setEditVarification(item);
     };
 
     const storage = new StorageManager();
@@ -90,45 +81,20 @@ export default function Home() {
     const fetchData = async () => {
         setIsLoading(true);
         try {
-            // Simulate API delay
-            await new Promise((res) => setTimeout(res, 500));
+            const response = await axiosProvider.get("/getallverifications");
+            // console.log("API Response:", response.data);
 
-            // Static mock data
-            const mockAccounts: TotalAccounts[] = [
-                {
-                    id: "1",
-                    category: "Alpha Corp",
-                    sub_category: "Beta Crop",
-                    // phone_office: "1234567890",
-                    // phone_alternate: "9876543210",
-                    // website: "https://alphacorp.com",
-                    // industry: "Finance",
-                    created_by: "admin",
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString(),
-                },
-                {
-                    id: "2",
-                    category: "Beta Solutions",
-                    sub_category: "Gama Solutions",
-                    // phone_office: "1122334455",
-                    // phone_alternate: "9988776655",
-                    // website: "https://betasolutions.com",
-                    // industry: "IT",
-                    created_by: "admin",
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString(),
-                },
-            ];
-
-            setData(mockAccounts);
+            const result: Totalvarification[] = response.data.data; // ✅ Corrected line
+            setData(result);
             setTotalPages(1);
         } catch (error: any) {
+            console.error("Error fetching categories:", error);
             setIsError(true);
         } finally {
             setIsLoading(false);
         }
     };
+
 
     const categoryOptions = [
         { label: "Technology", value: "technology" },
@@ -136,20 +102,7 @@ export default function Home() {
         { label: "Finance", value: "finance" },
     ];
 
-    const subCategoryOptionsMap: Record<string, { label: string; value: string }[]> = {
-        technology: [
-            { label: "Software", value: "software" },
-            { label: "Hardware", value: "hardware" },
-        ],
-        healthcare: [
-            { label: "Pharma", value: "pharma" },
-            { label: "Wellness", value: "wellness" },
-        ],
-        finance: [
-            { label: "Banking", value: "banking" },
-            { label: "Insurance", value: "insurance" },
-        ],
-    };
+
 
     useEffect(() => {
         fetchData();
@@ -161,27 +114,30 @@ export default function Home() {
     };
     // ADD FORM DATA
     const initialValues: FormValues = {
-        user_id,
-        category: "",
-        sub_category: "",
+        id: "",
+        title: "",
+        description: "",
+        file: "",
         // phone_office: "",
         // phone_alternate: "",
         // industry: "",
     };
     // EDIT FORM DATA
     const initialEditValues: EditFormValues = {
-        user_id,
-        id: editAccount?.id || "",
-        category: editAccount?.category || "",
-        sub_category: editAccount?.sub_categeory
+
+        id: editVarification?.id || "",
+        title: editVarification?.title || "",
+        description: editVarification?.description || "",
+        file: editVarification?.file || "",
         // phone_office: editAccount?.phone_office || "",
         // phone_alternate: editAccount?.phone_alternate || "",
         // industry: editAccount?.industry || "",
     };
 
     const validationSchema = Yup.object().shape({
-        category: Yup.string().required("Category is required"),
-        sub_category: Yup.string().required("Subcategory is required"),
+        title: Yup.string().required("Title is required"),
+        description: Yup.string().required("Description is required"),
+        file: Yup.string().required("File is required"),
         // phone_office: Yup.string().required("Office phone is required"),
         // phone_alternate: Yup.string(),
         // industry: Yup.string().required("Industry is required"),
@@ -229,7 +185,7 @@ export default function Home() {
         }
     };
 
-    const deleteUserData = async (item: TotalAccounts) => {
+    const deleteverification = async (item: Totalvarification) => {
         const userID = item.id;
 
         Swal.fire({
@@ -412,7 +368,7 @@ export default function Home() {
                                                         <FaEllipsisVertical
                                                             data-tooltip-id="my-tooltip"
                                                             data-tooltip-html={`<div>
-                                  <strong>Description:</strong> <span style="text-transform: capitalize;">${item.category}</span><br/>
+                                  <strong>Description:</strong> <span style="text-transform: capitalize;">${item.title}</span><br/>
                                  
                                 </div>`}
                                                             className="text-black leading-normal capitalize"
@@ -421,15 +377,14 @@ export default function Home() {
                                                     </div>
                                                     <div>
                                                         <p className="text-[#232323] text-base leading-normal">
-                                                            {item.category}
+                                                            {item.title}
                                                         </p>
                                                     </div>
                                                 </td>
                                                 <td className="px-2 py-0 border border-tableBorder hidden md:table-cell">
-                                                    <p className="text-[#232323] text-base leading-normal">
-                                                        {item.sub_category}
-                                                    </p>
+                                                    <p className="text-[#232323] text-base leading-normal">{item.description}</p>
                                                 </td>
+
 
                                                 <td className="px-2 py-1 border border-tableBorder">
                                                     <div className="flex gap-1 md:gap-2 justify-center md:justify-start">
@@ -446,7 +401,7 @@ export default function Home() {
 
                                                         {/* Delete Button */}
                                                         <button
-                                                            onClick={() => deleteUserData(item)}
+                                                            onClick={() => deleteverification(item)}
                                                             className="py-[4px] px-3 bg-black flex gap-1 items-center rounded-full text-xs md:text-sm group hover:bg-primary-600"
                                                         >
                                                             <RiDeleteBin6Line className="text-white w-4 h-4" />
@@ -647,123 +602,32 @@ export default function Home() {
                                         />
                                     </div>
                                     <div className="w-full border-b border-[#E7E7E7] mb-4 sm:mb-6"></div>
-                                    <div className="w-full  mx-auto p-0">
-                                        <Formik
-                                            initialValues={initialEditValues}
-                                            validationSchema={validationSchema}
-                                            onSubmit={handleEditSubmit}
-                                        >
-                                            <Form>
-                                                {/* Hidden user_id field */}
-                                                <Field type="hidden" name="user_id" />
+                                    <div className="w-full mx-auto p-0">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {/* Category */}
+                                            <div className="w-full mb-3">
+                                                <p className="text-[#232323] text-base leading-normal mb-2 font-semibold">Title</p>
+                                                <p className="text-firstBlack text-[15px] pl-4">
+                                                    {initialEditValues.title || "N/A"}
+                                                </p>
+                                            </div>
 
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    {/* Name */}
-                                                    <div className="w-full relative mb-3">
-                                                        <p className="text-[#232323] text-base leading-normal mb-2">Category</p>
-                                                        <Field
-                                                            as="select"
-                                                            name="category"
-                                                            className="hover:shadow-hoverInputShadow focus-border-primary w-full h-[50px] border border-[#DFEAF2] rounded-[4px] text-[15px] pl-4 mb-2 text-firstBlack"
-                                                        >
-                                                            <option value="">Select Category</option>
-                                                            {categoryOptions.map((cat) => (
-                                                                <option key={cat.value} value={cat.value}>
-                                                                    {cat.label}
-                                                                </option>
-                                                            ))}
-                                                        </Field>
-                                                        <ErrorMessage
-                                                            name="category"
-                                                            component="div"
-                                                            className="text-red-500 text-xs absolute top-[100%]"
-                                                        />
-                                                    </div>
-
-                                                    {/* Subcategory Input */}
-                                                    <div className="w-full relative mb-3">
-                                                        <p className="text-[#232323] text-base leading-normal mb-2">Sub category</p>
-                                                        <Field
-                                                            type="text"
-                                                            name="sub_category"
-                                                            placeholder="Enter Subcategory"
-                                                            className="hover:shadow-hoverInputShadow focus-border-primary w-full h-[50px] border border-[#DFEAF2] rounded-[4px] text-[15px] placeholder-[#718EBF] pl-4 mb-2 text-firstBlack"
-                                                        />
-                                                        <ErrorMessage
-                                                            name="sub_category"
-                                                            component="div"
-                                                            className="text-red-500 text-xs absolute top-[100%]"
-                                                        />
-                                                    </div>
-
-
-                                                    {/* Phone Office */}
-                                                    {/* <div className="w-full relative mb-3">
-                            <p className="text-[#232323] text-base leading-normal mb-2">
-                              Phone (Office)
-                            </p>
-                            <Field
-                              type="text"
-                              name="phone_office"
-                              placeholder="Enter office phone"
-                              className="hover:shadow-hoverInputShadow focus-border-primary w-full h-[50px] border border-[#DFEAF2] rounded-[4px] text-[15px] placeholder-[#718EBF] pl-4 mb-2 text-firstBlack"
-                            />
-                            <ErrorMessage
-                              name="phone_office"
-                              component="div"
-                              className="text-red-500 text-xs absolute top-[100%]"
-                            />
-                          </div> */}
-
-                                                    {/* Phone Alternate */}
-                                                    {/* <div className="w-full relative mb-3">
-                            <p className="text-[#232323] text-base leading-normal mb-2">
-                              Phone (Alternate)
-                            </p>
-                            <Field
-                              type="text"
-                              name="phone_alternate"
-                              placeholder="Enter alternate phone"
-                              className="hover:shadow-hoverInputShadow focus-border-primary w-full h-[50px] border border-[#DFEAF2] rounded-[4px] text-[15px] placeholder-[#718EBF] pl-4 mb-2 text-firstBlack"
-                            />
-                            <ErrorMessage
-                              name="phone_alternate"
-                              component="div"
-                              className="text-red-500 text-xs absolute top-[100%]"
-                            />
-                          </div> */}
-
-                                                    {/* Industry */}
-                                                    {/* <div className="w-full relative mb-3">
-                            <p className="text-[#232323] text-base leading-normal mb-2">
-                              Industry
-                            </p>
-                            <Field
-                              type="text"
-                              name="industry"
-                              placeholder="Enter industry"
-                              className="hover:shadow-hoverInputShadow focus-border-primary w-full h-[50px] border border-[#DFEAF2] rounded-[4px] text-[15px] placeholder-[#718EBF] pl-4 mb-2 text-firstBlack"
-                            />
-                            <ErrorMessage
-                              name="industry"
-                              component="div"
-                              className="text-red-500 text-xs absolute top-[100%]"
-                            />
-                          </div> */}
-                                                </div>
-
-                                                {/* Submit Button */}
-                                                <div className="mt-6">
-                                                    <button
-                                                        type="submit"
-                                                        className="py-[13px] px-[26px] bg-primary-500 rounded-[4px] text-base font-medium leading-6 text-white hover:text-dark cursor-pointer w-full text-center hover:bg-primary-700 hover:text-white"
-                                                    >
-                                                        Submit
-                                                    </button>
-                                                </div>
-                                            </Form>
-                                        </Formik>
+                                            {/* Subcategory */}
+                                            <div className="w-full mb-3">
+                                                <p className="text-[#232323] text-base leading-normal mb-2 font-semibold">Description</p>
+                                                <p className="text-firstBlack text-[15px] pl-4">
+                                                    {initialEditValues.description || "N/A"}
+                                                </p>
+                                            </div>
+                                            <div className="w-full mb-3">
+                                                <p className="text-[#232323] text-base leading-normal mb-2 font-semibold">Image</p>
+                                                <p className="text-firstBlack text-[15px] pl-4">
+                                                    {initialEditValues.file || "N/A"}
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
+
                                 </div>
                             </div>
                         )}
