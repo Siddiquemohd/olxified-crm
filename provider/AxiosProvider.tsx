@@ -2,22 +2,21 @@ import axios, {
   AxiosInstance,
   AxiosResponse,
   InternalAxiosRequestConfig,
+  AxiosHeaders
 } from "axios";
 import StorageManager from "./StorageManager";
 
 const isServer = typeof window === "undefined";
-const defaultBaseURL = "http://192.168.1.3:8003/api/v1/olxified";
-
-const axiosInstance = axios.create({
-  baseURL: defaultBaseURL,
-  withCredentials: true,
-});
-
+const defaultBaseURL = "http://192.168.0.105:8003/api/v1/olxified";
 
 export default class AxiosProvider {
+  baseUrl(arg0: string, baseUrl: any) {
+    throw new Error("Method not implemented.");
+  }
   private instance: AxiosInstance;
   private baseURL: string;
   private storage: StorageManager;
+  defaults: any;
 
   constructor(baseURL: string = defaultBaseURL) {
     this.baseURL = isServer
@@ -25,9 +24,15 @@ export default class AxiosProvider {
       : baseURL;
 
     this.storage = new StorageManager();
+
+    // Initialize with proper AxiosHeaders
+    const headers = new AxiosHeaders();
+    headers.set('Content-Type', 'application/x-www-form-urlencoded');
+
     this.instance = axios.create({
       baseURL: this.baseURL,
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      headers: headers,
+      withCredentials: true
     });
 
     this.instance.interceptors.request.use(
@@ -48,8 +53,11 @@ export default class AxiosProvider {
       const accessToken = this.storage.getAccessToken();
       console.log("Access token***", accessToken);
 
-      if (accessToken) {
-        config.headers.set("Authorization", `Bearer ${accessToken}`);
+      if (accessToken && config.headers) {
+        // Use proper header setting method
+        const headers = new AxiosHeaders(config.headers);
+        headers.set('Authorization', `Bearer ${accessToken}`);
+        config.headers = headers;
       }
     } catch (error) {
       console.error("Error setting request headers:", error);
@@ -58,33 +66,62 @@ export default class AxiosProvider {
     return config;
   }
 
+  // Update method signatures to properly handle headers
   async post<T = any>(
     url: string,
     data: any,
-    config?: InternalAxiosRequestConfig
+    config?: Omit<InternalAxiosRequestConfig, 'headers'> & { headers?: Record<string, string> }
   ): Promise<AxiosResponse<T>> {
+    if (config?.headers) {
+      const headers = new AxiosHeaders(this.instance.defaults.headers);
+      Object.entries(config.headers).forEach(([key, value]) => {
+        headers.set(key, value);
+      });
+      return this.instance.post<T>(url, data, { ...config, headers });
+    }
     return this.instance.post<T>(url, data, config);
   }
 
   async get<T = any>(
     url: string,
-    config?: InternalAxiosRequestConfig
+    config?: Omit<InternalAxiosRequestConfig, 'headers'> & { headers?: Record<string, string> }
   ): Promise<AxiosResponse<T>> {
+    if (config?.headers) {
+      const headers = new AxiosHeaders(this.instance.defaults.headers);
+      Object.entries(config.headers).forEach(([key, value]) => {
+        headers.set(key, value);
+      });
+      return this.instance.get<T>(url, { ...config, headers });
+    }
     return this.instance.get<T>(url, config);
   }
 
   async put<T = any>(
     url: string,
     data: any,
-    config?: InternalAxiosRequestConfig
+    config?: Omit<InternalAxiosRequestConfig, 'headers'> & { headers?: Record<string, string> }
   ): Promise<AxiosResponse<T>> {
+    if (config?.headers) {
+      const headers = new AxiosHeaders(this.instance.defaults.headers);
+      Object.entries(config.headers).forEach(([key, value]) => {
+        headers.set(key, value);
+      });
+      return this.instance.put<T>(url, data, { ...config, headers });
+    }
     return this.instance.put<T>(url, data, config);
   }
 
   async delete<T = any>(
     url: string,
-    config?: InternalAxiosRequestConfig
+    config?: Omit<InternalAxiosRequestConfig, 'headers'> & { headers?: Record<string, string> }
   ): Promise<AxiosResponse<T>> {
+    if (config?.headers) {
+      const headers = new AxiosHeaders(this.instance.defaults.headers);
+      Object.entries(config.headers).forEach(([key, value]) => {
+        headers.set(key, value);
+      });
+      return this.instance.delete<T>(url, { ...config, headers });
+    }
     return this.instance.delete<T>(url, config);
   }
 

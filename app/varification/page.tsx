@@ -23,9 +23,11 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import Swal from "sweetalert2";
 import UserActivityLogger from "../../provider/UserActivityLogger";
 import { useAuthRedirect } from "../component/hooks/useAuthRedirect";
+import { AxiosHeaders } from "axios";
 
 const axiosProvider = new AxiosProvider();
 const activityLogger = new UserActivityLogger();
+
 
 interface Totalvarification {
     id: string;
@@ -33,6 +35,7 @@ interface Totalvarification {
     description: string;
     image: string | null;
     video: string | null;
+    status: string;
 }
 
 interface FormValues {
@@ -40,13 +43,17 @@ interface FormValues {
     title: string;
     description: string;
     file: string;
+    status: string;
 }
 interface EditFormValues {
     id: string;
     title: string;
     description: string;
-    file: string;
+    image?: string;
+    video?: string;
+    status: string;
 }
+
 
 export default function Home() {
     const isChecking = useAuthRedirect();
@@ -80,16 +87,26 @@ export default function Home() {
     // inside fetchData()
     const fetchData = async () => {
         setIsLoading(true);
+        setIsError(false);
         try {
+            console.log("Fetching verifications from:", axiosProvider.baseUrl);
             const response = await axiosProvider.get("/getallverifications");
-            // console.log("API Response:", response.data);
+            console.log("API Response:", response.data);
 
-            const result: Totalvarification[] = response.data.data; // ✅ Corrected line
-            setData(result);
-            setTotalPages(1);
+            if (response.data?.data) {
+                setData(response.data.data);
+                setTotalPages(response.data.totalPages || 1);
+            } else {
+                throw new Error("Invalid response format - missing data");
+            }
         } catch (error: any) {
-            console.error("Error fetching categories:", error);
+            console.error("Error details:", {
+                message: error.message,
+                response: error.response?.data,
+                stack: error.stack
+            });
             setIsError(true);
+            toast.error(error.response?.data?.message || "Failed to fetch verifications");
         } finally {
             setIsLoading(false);
         }
@@ -118,21 +135,21 @@ export default function Home() {
         title: "",
         description: "",
         file: "",
+        status: "",
         // phone_office: "",
         // phone_alternate: "",
         // industry: "",
     };
     // EDIT FORM DATA
     const initialEditValues: EditFormValues = {
-
         id: editVarification?.id || "",
         title: editVarification?.title || "",
         description: editVarification?.description || "",
-        file: editVarification?.file || "",
-        // phone_office: editAccount?.phone_office || "",
-        // phone_alternate: editAccount?.phone_alternate || "",
-        // industry: editAccount?.industry || "",
+        image: editVarification?.image || "",
+        video: editVarification?.video || "",
+        status: editVarification?.status || "",
     };
+
 
     const validationSchema = Yup.object().shape({
         title: Yup.string().required("Title is required"),
@@ -165,32 +182,41 @@ export default function Home() {
         //   console.error("Failed to create product:", error);
         // }
     };
-    const handleEditSubmit = async (values: FormValues) => {
+    const handleEditSubmit = async (status: string) => {
         try {
-            const response = await axiosProvider.post("/updateaccount", values);
-            const activity = "Updated CRM Account";
-            const moduleName = "Account";
-            const type = "Update";
-            await activityLogger.crmUpdate(
-                response.data.data.id,
-                activity,
-                moduleName,
-                type
+            const response = await axiosProvider.post(
+                "/updateverification",
+                {
+                    id: editVarification.id,
+                    status: status
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
             );
-            toast.success("Accounts Updated");
-            setFlyoutOpen(false);
-            fetchData();
+
+            if (response.data?.success) {
+                toast.success(`Verification ${status.toLowerCase()} successfully`);
+                setFlyoutOpen(false);
+                fetchData();
+            } else {
+                throw new Error(response.data?.message || "Failed to update verification");
+            }
         } catch (error: any) {
-            console.error("Failed to create product:", error);
+            console.error("Failed to update verification:", error);
+            toast.error(error.response?.data?.message || "Failed to update verification");
         }
     };
 
+
     const deleteverification = async (item: Totalvarification) => {
-        const userID = item.id;
+        const verificationID = item.id;
 
         Swal.fire({
             title: "Are you sure?",
-            text: "Do you really want to delete this user?",
+            text: "Do you really want to delete this verification?",
             icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Yes",
@@ -200,16 +226,12 @@ export default function Home() {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    await axiosProvider.post("/deleteaccount", { id: userID });
-                    const activity = "Deleted CRM Account";
-                    const moduleName = "Account";
-                    const type = "Delete";
-                    await activityLogger.crmDelete(userID, activity, moduleName, type);
+                    await axiosProvider.post("/deleteverification", { id: verificationID });
                     toast.success("Successfully Deleted");
                     fetchData();
                 } catch (error) {
-                    console.error("Error deleting user:", error);
-                    toast.error("Failed to delete user");
+                    console.error("Error deleting verification:", error);
+                    toast.error("Failed to delete verification");
                 }
             }
         });
@@ -267,7 +289,7 @@ export default function Home() {
                             {/* Search and filter table row */}
                             <div className=" flex justify-end items-center mb-6  w-full mx-auto">
                                 <div className=" flex justify-center items-center gap-4">
-                                    <div
+                                    {/* <div
                                         className=" flex items-center gap-2 py-3 px-6 rounded-[4px] border border-[#E7E7E7] cursor-pointer bg-primary-500 group hover:bg-primary-700"
                                         onClick={toggleFilterFlyout}
                                     >
@@ -275,7 +297,7 @@ export default function Home() {
                                         <p className=" text-white  text-base font-medium group-hover:text-white">
                                             Add Accounts
                                         </p>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </div>
@@ -305,6 +327,16 @@ export default function Home() {
                                             <div className="flex items-center gap-2 p-3">
                                                 <div className="font-medium text-firstBlack text-base leading-normal">
                                                     Discription
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="p-2 py-0 border border-tableBorder"
+                                        >
+                                            <div className="flex items-center gap-2 p-3">
+                                                <div className="font-medium text-firstBlack text-base leading-normal">
+                                                    Status
                                                 </div>
                                             </div>
                                         </th>
@@ -363,14 +395,14 @@ export default function Home() {
                                                 className="border border-tableBorder bg-white hover:bg-primary-100"
                                                 key={index}
                                             >
-                                                <td className="p-4  flex items-center gap-2">
+                                                {/* Title with tooltip */}
+                                                <td className="p-4 flex items-center gap-2">
                                                     <div className="md:hidden">
                                                         <FaEllipsisVertical
                                                             data-tooltip-id="my-tooltip"
                                                             data-tooltip-html={`<div>
-                                  <strong>Description:</strong> <span style="text-transform: capitalize;">${item.title}</span><br/>
-                                 
-                                </div>`}
+                <strong>Description:</strong> <span style="text-transform: capitalize;">${item.title}</span><br/>
+              </div>`}
                                                             className="text-black leading-normal capitalize"
                                                         />
                                                         <Tooltip id="my-tooltip" place="right" float />
@@ -381,11 +413,27 @@ export default function Home() {
                                                         </p>
                                                     </div>
                                                 </td>
+
+                                                {/* Description */}
                                                 <td className="px-2 py-0 border border-tableBorder hidden md:table-cell">
                                                     <p className="text-[#232323] text-base leading-normal">{item.description}</p>
                                                 </td>
 
+                                                {/* Status with background */}
+                                                <td className="px-2 py-2 border border-tableBorder text-center">
+                                                    <span
+                                                        className={`text-sm font-semibold px-2 py-1 rounded-full ${item.status === 'Approved'
+                                                            ? 'bg-green-100 text-green-800'
+                                                            : item.status === 'Rejected'
+                                                                ? 'bg-red-100 text-red-800'
+                                                                : 'bg-yellow-100 text-yellow-800'
+                                                            }`}
+                                                    >
+                                                        {item.status}
+                                                    </span>
+                                                </td>
 
+                                                {/* Action buttons */}
                                                 <td className="px-2 py-1 border border-tableBorder">
                                                     <div className="flex gap-1 md:gap-2 justify-center md:justify-start">
                                                         {/* View Button */}
@@ -405,9 +453,7 @@ export default function Home() {
                                                             className="py-[4px] px-3 bg-black flex gap-1 items-center rounded-full text-xs md:text-sm group hover:bg-primary-600"
                                                         >
                                                             <RiDeleteBin6Line className="text-white w-4 h-4" />
-                                                            <p className="text-white hidden md:block">
-                                                                Delete
-                                                            </p>
+                                                            <p className="text-white hidden md:block">Delete</p>
                                                         </button>
                                                     </div>
                                                 </td>
@@ -415,6 +461,7 @@ export default function Home() {
                                         ))
                                     )}
                                 </tbody>
+
                             </table>
                         </div>
                         {/* ----------------End table--------------------------- */}
@@ -619,16 +666,58 @@ export default function Home() {
                                                     {initialEditValues.description || "N/A"}
                                                 </p>
                                             </div>
-                                            <div className="w-full mb-3">
-                                                <p className="text-[#232323] text-base leading-normal mb-2 font-semibold">Image</p>
+                                            {editVarification?.image ? (
+                                                <img
+                                                    src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8003'}/uploads/${editVarification.image}`}
+                                                    alt="Verification"
+                                                    className="w-full max-w-xs h-auto rounded"
+                                                    crossOrigin="anonymous"
+                                                    onError={(e) => {
+                                                        (e.target as HTMLImageElement).style.display = 'none';
+                                                    }}
+                                                />
+                                            ) : editVarification?.video ? (
+                                                <div className="relative">
+                                                    <video controls className="w-full max-w-xs rounded" crossOrigin="anonymous">
+                                                        <source
+                                                            src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8003'}/uploads/${editVarification.video}`}
+                                                            type="video/mp4"
+                                                        />
+                                                        Your browser does not support the video tag.
+                                                    </video>
+                                                </div>
+                                            ) : (
+                                                <p className="text-firstBlack text-[15px] pl-4">No media available</p>
+                                            )}
+
+
+
+                                            {/* <div className="w-full mb-3">
+                                                <p className="text-[#232323] text-base leading-normal mb-2 font-semibold">Status</p>
                                                 <p className="text-firstBlack text-[15px] pl-4">
-                                                    {initialEditValues.file || "N/A"}
+                                                    {initialEditValues.status || "N/A"}
                                                 </p>
-                                            </div>
+                                            </div> */}
                                         </div>
                                     </div>
 
                                 </div>
+                                <div className="mt-3 flex gap-3">
+                                    <button
+                                        onClick={() => handleEditSubmit('Approved')}
+                                        className="py-[13px] px-[26px] bg-green-600 rounded-[4px] text-base font-medium leading-6 text-white cursor-pointer w-full text-center hover:bg-green-700"
+                                    >
+                                        Approve
+                                    </button>
+                                    <button
+                                        onClick={() => handleEditSubmit('Rejected')}
+                                        className="py-[13px] px-[26px] bg-red-600 rounded-[4px] text-base font-medium leading-6 text-white cursor-pointer w-full text-center hover:bg-red-700"
+                                    >
+                                        Reject
+                                    </button>
+                                </div>
+
+
                             </div>
                         )}
 
